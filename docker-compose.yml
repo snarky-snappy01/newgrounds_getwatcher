@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  ngwatch:
+    build: .
+    container_name: ngwatch
+    environment:
+      # Discovery & polling behavior
+      START_ID: "999000"
+      SEED_ID: "1000100"
+      STOP_AT: "1000100"
+      INTERVAL: "3"
+      THROTTLE: "0.2"
+      CURL_TIMEOUT: "5"
+      RETRIES: "3"
+      UA: "NG-FrontierWatcher/1.2 (+you@example.com)"
+
+      # Robust frontier scan
+      ADV_WINDOW: "200"
+      GAP_BUDGET: "4"
+      # FORCE_RESEED: "1"   # uncomment for a one-off reseed
+
+      # Notifications
+      NOTIFY_EVERY: "2"
+      SWITCH_AT_LEFT: "15"
+      ALWAYS_PER_POST: "0"
+
+      # Logging knobs
+      POLL_LOG: "1"        # print a line for every poll (your request)
+      PROBE_LOG: "0"       # set to "1" to see per-attempt details
+    volumes:
+      - ./state:/state
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "ngwatch.sh"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
